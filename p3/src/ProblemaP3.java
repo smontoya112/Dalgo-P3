@@ -1,6 +1,10 @@
 import java.util.Scanner;
 
 public class ProblemaP3 {
+    public String scs(String[] cadenas){
+        
+        return null;
+    }
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
         int numCasos = scanner.nextInt();
