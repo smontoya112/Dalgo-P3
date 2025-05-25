@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.random.RandomGenerator;
 
 public class ProblemaP3 {
     public static int overlap(String cadena1, String cadena2) {
@@ -64,6 +66,44 @@ public class ProblemaP3 {
                 }
                 System.out.println();
             }
+
+
+            // iplementacion aproximaada de camino hamiltoniano, con aproximacion greedy
+            String[] stringsBusqueda = new String[grafo[0].length];
+            for (int i = 0; i<grafo[0].length; i++){
+                //implementar como se visitan los nodos
+                int[] visitados = new int[cadenas.length];
+                //buscar el maximo sobrelapamiento entre los indices.
+                int piv = 0;
+                int m =0;
+                for(int j=0;j<grafo[i].length;j++){
+                    //un numero aleatorio que sea diferente a j
+                    if (piv == j && m==0 && j>0 && j<grafo[0].length){
+                        piv = new Random().nextInt(j,grafo[0].length);
+                    }
+                    //caso que j es 0
+                    else if(){
+
+                    }
+                    //caso que j es el extremo
+                    else if(){
+
+                    }
+                    if(grafo[i][j]>m){
+                        piv = j;
+                        m = grafo[i][j];
+                    }
+                }
+                visitados[i] = piv;
+                StringBuilder stringFinalIteracion = new StringBuilder();
+                for (int l=0 ; l<visitados.length;l++){
+                    int peso = grafo[i][l];
+                    stringFinalIteracion.append( cadenas[l].subSequence(0,k-peso)); 
+                }
+                stringsBusqueda[i] = stringFinalIteracion.toString();
+            }
+            //encontrar el minimo string
+            System.out.println();
         }
         scanner.close();
     }
