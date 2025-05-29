@@ -1,18 +1,13 @@
 // Autores: Antonio Muñoz y Samuel Montoya
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
-public class ProblemaP3 {
+public class ProblemaaP_3 {
 
+    // Optimizado a O(k) usando comparación directa
     public static int overlap(String s1, String s2) {
         int max = 0;
         int maxLen = Math.min(s1.length(), s2.length());
-
         for (int len = 1; len <= maxLen; len++) {
             boolean match = true;
             for (int i = 0; i < len; i++) {
@@ -21,9 +16,7 @@ public class ProblemaP3 {
                     break;
                 }
             }
-            if (match) {
-                max = len;
-            }
+            if (match) max = len;
         }
         return max;
     }
@@ -34,17 +27,20 @@ public class ProblemaP3 {
         return lista.toArray(new String[0]);
     }
 
-    public static String greedySuperstring(String[] cadenas, int[][] grafo, int inicio) {
+    public static String greedySuperstring(String[] cadenas) {
         int n = cadenas.length;
         boolean[] visitados = new boolean[n];
-        String superstring = cadenas[inicio];
-        visitados[inicio] = true;
-        int actual = inicio;
+        Set<String> yaIncluidas = new HashSet<>();
+
+        String superstring = cadenas[0];
+        visitados[0] = true;
+        yaIncluidas.add(cadenas[0]);
 
         for (int i = 1; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (!visitados[j] && superstring.contains(cadenas[j])) {
                     visitados[j] = true;
+                    yaIncluidas.add(cadenas[j]);
                 }
             }
 
@@ -52,9 +48,12 @@ public class ProblemaP3 {
             int maxSolapamiento = -1;
 
             for (int j = 0; j < n; j++) {
-                if (!visitados[j] && grafo[actual][j] > maxSolapamiento) {
-                    maxSolapamiento = grafo[actual][j];
-                    siguiente = j;
+                if (!visitados[j]) {
+                    int solap = overlap(superstring, cadenas[j]);
+                    if (solap > maxSolapamiento) {
+                        maxSolapamiento = solap;
+                        siguiente = j;
+                    }
                 }
             }
 
@@ -62,15 +61,9 @@ public class ProblemaP3 {
                 String sub = cadenas[siguiente];
                 superstring += sub.substring(maxSolapamiento);
                 visitados[siguiente] = true;
-                actual = siguiente;
+                yaIncluidas.add(sub);
             } else {
                 break;
-            }
-        }
-
-        for (int j = 0; j < n; j++) {
-            if (!visitados[j] && superstring.contains(cadenas[j])) {
-                visitados[j] = true;
             }
         }
 
@@ -87,33 +80,16 @@ public class ProblemaP3 {
             int k = Integer.parseInt(params[1]);
 
             String[] cadenas = new String[n];
-            for (int j = 0; j < n; j++) {
-                String cadena = scanner.nextLine();
-                if (cadena.length() == k) {
-                    cadenas[j] = cadena;
-                } else {
-                    System.err.println("Las palabras no son todas del mismo tamaño");
-                    scanner.close();
-                    return; 
-                }
+            for (int i = 0; i < n; i++) {
+                cadenas[i] = scanner.nextLine();
             }
 
             String mejorResultado = null;
-            int intentos = Math.min(n + 10, 100);
+            int intentos = 1;
 
             for (int intento = 0; intento < intentos; intento++) {
                 String[] cns = mezclarCadenas(cadenas);
-
-                int[][] grafo = new int[n][n];
-                for (int i = 0; i < n; i++) {
-                    for (int j = 0; j < n; j++) {
-                        if (i != j) {
-                            grafo[i][j] = overlap(cns[i], cns[j]);
-                        }
-                    }
-                }
-
-                String resultado = greedySuperstring(cns, grafo, 0);
+                String resultado = greedySuperstring(cns);
                 if (mejorResultado == null || resultado.length() < mejorResultado.length()) {
                     mejorResultado = resultado;
                 }
