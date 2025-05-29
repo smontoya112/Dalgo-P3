@@ -1,5 +1,4 @@
-// Autores: Antonio Muñoz y Samuel Montoya
-
+// Antonio Munos Samuel Montoya 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,8 +11,8 @@ public class ProblemaP3 {
     public static int overlap(String s1, String s2) {
         int max = 0;
         int maxLen = Math.min(s1.length(), s2.length());
-
-        for (int len = 1; len <= maxLen; len++) {
+        
+        for (int len = maxLen; len > 0; len--) {
             boolean match = true;
             for (int i = 0; i < len; i++) {
                 if (s1.charAt(s1.length() - len + i) != s2.charAt(i)) {
@@ -22,28 +21,28 @@ public class ProblemaP3 {
                 }
             }
             if (match) {
-                max = len;
+                return len; 
             }
         }
         return max;
     }
 
     public static String[] mezclarCadenas(String[] original) {
-        List<String> lista = new ArrayList<>(Arrays.asList(original.clone()));
-        Collections.shuffle(lista, new Random());
+        List<String> lista = new ArrayList<>(Arrays.asList(original));
+        Collections.shuffle(lista);
         return lista.toArray(new String[0]);
     }
 
     public static String greedySuperstring(String[] cadenas, int[][] grafo, int inicio) {
         int n = cadenas.length;
         boolean[] visitados = new boolean[n];
-        String superstring = cadenas[inicio];
+        StringBuilder superstring = new StringBuilder(cadenas[inicio]);
         visitados[inicio] = true;
         int actual = inicio;
 
         for (int i = 1; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if (!visitados[j] && superstring.contains(cadenas[j])) {
+                if (!visitados[j] && superstring.toString().contains(cadenas[j])) {
                     visitados[j] = true;
                 }
             }
@@ -59,8 +58,7 @@ public class ProblemaP3 {
             }
 
             if (siguiente != -1) {
-                String sub = cadenas[siguiente];
-                superstring += sub.substring(maxSolapamiento);
+                superstring.append(cadenas[siguiente].substring(maxSolapamiento));
                 visitados[siguiente] = true;
                 actual = siguiente;
             } else {
@@ -69,12 +67,12 @@ public class ProblemaP3 {
         }
 
         for (int j = 0; j < n; j++) {
-            if (!visitados[j] && superstring.contains(cadenas[j])) {
+            if (!visitados[j] && superstring.toString().contains(cadenas[j])) {
                 visitados[j] = true;
             }
         }
 
-        return superstring;
+        return superstring.toString();
     }
 
     public static void main(String[] args) {
@@ -87,23 +85,30 @@ public class ProblemaP3 {
             int k = Integer.parseInt(params[1]);
 
             String[] cadenas = new String[n];
+            boolean valid = true;
+            
             for (int j = 0; j < n; j++) {
-                String cadena = scanner.nextLine();
-                if (cadena.length() == k) {
-                    cadenas[j] = cadena;
-                } else {
-                    System.err.println("Las palabras no son todas del mismo tamaño");
-                    scanner.close();
-                    return; 
+                cadenas[j] = scanner.nextLine();
+                if (cadenas[j].length() != k) {
+                    valid = false;
                 }
+            }
+
+            if (!valid) {
+                System.err.println("Las palabras no son todas del mismo tamaño");
+                scanner.close();
+                return;
             }
 
             String mejorResultado = null;
             int intentos = Math.min(n + 10, 100);
 
-            for (int intento = 0; intento < intentos; intento++) {
-                String[] cns = mezclarCadenas(cadenas);
+            List<String[]> mezclas = new ArrayList<>();
+            for (int i = 0; i < intentos; i++) {
+                mezclas.add(mezclarCadenas(cadenas));
+            }
 
+            for (String[] cns : mezclas) {
                 int[][] grafo = new int[n][n];
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < n; j++) {
